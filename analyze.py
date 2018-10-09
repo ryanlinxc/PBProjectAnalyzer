@@ -9,6 +9,7 @@ import uuid
 import weakref
 from PBXProjectHelper import PBXProjectHelper
 
+project_path = sys.argv[1];
 def printInvalidSet(prefix, invalidSet):
     for g in invalidSet:
         print prefix + g
@@ -24,12 +25,14 @@ def findTopParent(groupDic, nodeId):
             topParentId = next(iter(parentDic))
     return topParentId
 
-helper = PBXProjectHelper ("/Users/linxiaocheng/Downloads/Test/Test.xcodeproj/project.pbxproj")
+helper = PBXProjectHelper (project_path)
 objects = helper.root['objects']
 
 # check group : 引用链 PBXGroup —>其它PBXGroup —-> PBXProject(mainGroup)
+for objId, objData in objects.iteritems():
+    if objData['isa'] == 'PBXProject':
+        topParentId = objData['mainGroup']
 groupDic = {k: v for k, v in objects.iteritems() if v['isa'] == 'PBXGroup' }
-topParentId = '1664C306216B655A00BE8F50'
 validGroupDic = dict()
 for objId, objData in groupDic.iteritems():
     if findTopParent(groupDic, objId) != topParentId:
